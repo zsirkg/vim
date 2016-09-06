@@ -36,8 +36,13 @@ Plugin 'Valloric/YouCompleteMe'
 Plugin 'justinmk/vim-syntax-extra'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'vim-utils/vim-man'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'terryma/vim-expand-region'
+Plugin 'vim-scripts/peaksea'
+Plugin 'tpope/vim-commentary'
 
-" vim-scripts repos  
+" vim-scripts repos
 Plugin 'ifdef-highlighting'
 
 " All of your Plugins must be added before the following line
@@ -72,25 +77,37 @@ set relativenumber      " 显示相对行号
 set scrolloff=10        " 垂直移动时保持n行固定
 set sidescroll=5        " 水平移动时保持n列固定
 
-set tabstop=4           " 制表符等于几个空格 
+set tabstop=4           " 制表符等于几个空格
 set shiftwidth=4        " 制表符缩进时应用几个空格
-set noexpandtab         " 不使用扩展制表符
+set expandtab           " 使用扩展制表符
+set autoindent          " Auto indent
+set si                  " Smart indent
+set smarttab
 
 set wrap                " 文本回滚
 set fencs=utf-8,gb18030 " 打卡文件时优先选择编码格式
 set ffs=unix,dos,mac    " 文件结束符
 set autoread            " 自动读取文件的修改(其他软件的修改)
-set nofoldenable		" 关闭折叠
+set nofoldenable        " 关闭折叠
+set clipboard=unnamed   " 复制使用系统剪切板
 
 set hlsearch            " 搜索时高亮
 set incsearch           " 搜索输入高亮
 set nowrapscan          " 关闭搜索回滚
 set ignorecase          " 搜索时忽略大小写
+set smartcase           " 搜索中含有大写则搜索大写
 
 set showcmd             " 在状态栏中显示命令
 set history=200         " 存储命令历史最大个数
 
-set mouse=              " 关闭鼠标使用
+set directory-=.        " swap文件不存储在当前文件夹
+
+set list                " show trailing whitespace
+set listchars=tab:▸\ ,trail:▫
+
+" 关闭gvim菜单
+set guioptions-=m
+set guioptions-=T
 
 " 关闭错误时声音
 set noerrorbells
@@ -109,15 +126,24 @@ set laststatus=2        " 总是显示状态栏
 "-----------------------------------------------------------------------------
 
 " 设置vim的本色方案
-set background=dark
-colorscheme desert_my
+syntax enable
+if has('gui_running')
+    set mouse=a
+    "set background=light
+    set background=dark
+    colorscheme solarized
+else
+    set mouse=              " 关闭鼠标使用
+    set background=dark
+    colorscheme peaksea
+endif
 
 if has("gui_gtk2")
-	set guifont=consolas\ 16
+    set guifont=consolas\ 16
 elseif has("gui_macvim")
-	set guifont=consolas:h12
+    set guifont=consolas:h12
 elseif has("gui_win32")
-	set guifont=consolas:h11
+    set guifont=consolas:h11
 end
 
 
@@ -127,17 +153,24 @@ end
 
 let g:mapleader = ","
 
-" 快速重载配置文件
-nnoremap <leader>s :source ~/.vimrc<cr> 
-nnoremap <leader>e :e! ~/.vimrc<cr>
+" 移动支持折行
+noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
+noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
 
-" 赋值到系统剪切版
-noremap Y "+y
-noremap P "+p
+" 窗口切换
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+
+" 复制粘贴
+vnoremap p "_dP
 
 " ESC
-inoremap jk <Esc>
-inoremap <C-L> <Esc>
+inoremap jj <Esc>
+
+" 重新加载vimrc配置
+noremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
 "------------------------------------------------------------------------------
 " Function.
@@ -145,17 +178,17 @@ inoremap <C-L> <Esc>
 
 " 自动跳转到上一次打开的位置
 autocmd BufReadPost *
-			\ if line("'\"") > 0 && line ("'\"") <= line("$") |
-			\ exe "normal! g'\"" |
-			\ endif 
+            \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+            \ exe "normal! g'\"" |
+            \ endif
 
 "------------------------------------------------------------------------------
 " Plugin.
 "-----------------------------------------------------------------------------
 
 " Nerdtree
-noremap <F7> :NERDTreeToggle<CR> 
-noremap <C-N> :NERDTreeToggle<CR>
+noremap <F7> :NERDTreeToggle<CR>
+noremap <silent> <leader>d :NERDTreeToggle<CR>
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -166,10 +199,10 @@ set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe  " Windows
 
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = {
-			\ 'dir':  '\v[\/]\.(git|hg|svn)$',
-			\ 'file': '\v\.(exe|so|dll)$',
-			\ 'link': 'some_bad_symbolic_links',
-			\ }
+            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+            \ 'file': '\v\.(exe|so|dll)$',
+            \ 'link': 'some_bad_symbolic_links',
+            \ }
 
 " vim-airline
 let g:airline#extensions#tabline#enabled = 1
@@ -178,12 +211,15 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 
 " tagbar
 let g:tagbar_autoclose = 1
-let g:tagbar_autofocus = 1 
-noremap <F8> :TagbarToggle<CR>
-noremap <C-M> :TagbarToggle<CR>
+let g:tagbar_autofocus = 1
+nnoremap <silent> <F8> :TagbarToggle<CR>
 
 " bufexplorer
-nnoremap <C-L> :ToggleBufExplorer<CR>
+noremap <silent> <leader>l :ToggleBufExplorer<CR>
+
+" easymotion
+map w <Plug>(easymotion-lineforward)
+nmap b <Plug>(easymotion-linebackward)
 
 " YCM
 set completeopt-=preview
