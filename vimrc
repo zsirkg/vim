@@ -166,8 +166,15 @@ noremap <C-l> <C-w>l
 " 复制粘贴
 vnoremap p "_dP
 
+" 保存
+noremap <silent> <leader>w :w<CR>
+
 " ESC
-inoremap jj <Esc>
+inoremap jk <Esc>
+
+" tab切换
+noremap <silent> <Left> :bp<CR>
+noremap <silent> <Right> :bn<CR>
 
 " 重新加载vimrc配置
 noremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
@@ -189,19 +196,16 @@ autocmd BufReadPost *
 " Nerdtree
 noremap <F7> :NERDTreeToggle<CR>
 noremap <silent> <leader>d :NERDTreeToggle<CR>
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 " CtrlP
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
 set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe  " Windows
 
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = {
             \ 'dir':  '\v[\/]\.(git|hg|svn)$',
             \ 'file': '\v\.(exe|so|dll)$',
-            \ 'link': 'some_bad_symbolic_links',
+            \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
             \ }
 
 " vim-airline
@@ -213,13 +217,14 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:tagbar_autoclose = 1
 let g:tagbar_autofocus = 1
 nnoremap <silent> <F8> :TagbarToggle<CR>
+nnoremap <silent> <leader>t :TagbarToggle<CR>
 
-" bufexplorer
-noremap <silent> <leader>l :ToggleBufExplorer<CR>
+" buffere
+noremap <silent> <leader>b :ToggleBufExplorer<CR>
 
 " easymotion
-map w <Plug>(easymotion-lineforward)
-nmap b <Plug>(easymotion-linebackward)
+map <Leader>l <Plug>(easymotion-lineforward)
+map <Leader>h <Plug>(easymotion-linebackward)
 
 " YCM
 set completeopt-=preview
