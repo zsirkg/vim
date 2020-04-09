@@ -6,60 +6,38 @@
 " Based on https://github.com/s3rvac/dotfiles/blob/master/vim/.vimrc
 "------------------------------------------------------------------------------
 
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
 
-"------------------------------------------------------------------------------
-" VundleVim (https://github.com/VundleVim/Vundle.vim).
-"-----------------------------------------------------------------------------
+" Make sure you use single quotes
+Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --clangd-completer' }
+Plug 'scrooloose/nerdtree'
+Plug 'kien/ctrlp.vim'
+Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'majutsushi/tagbar'
+Plug 'jlanzarotta/bufexplorer'
+Plug 'scrooloose/syntastic'
+Plug 'justinmk/vim-syntax-extra'
+Plug 'godlygeek/csapprox'
+Plug 'altercation/vim-colors-solarized'
+Plug 'vim-utils/vim-man'
+Plug 'easymotion/vim-easymotion'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'terryma/vim-expand-region'
+Plug 'vim-scripts/peaksea'
+Plug 'tpope/vim-commentary'
+Plug 'mileszs/ack.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'junegunn/gv.vim'
+Plug 'gregsexton/gitv'
+Plug 'vim-scripts/a.vim'
+Plug 'vim-scripts/ifdef-highlighting'
 
-set nocompatible              " be iMproved, required
-filetype off                  " required
-
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
-
-" plugin on GitHub repo
-Plugin 'scrooloose/nerdtree'
-Plugin 'kien/ctrlp.vim'
-Plugin 'bling/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'majutsushi/tagbar'
-Plugin 'jlanzarotta/bufexplorer'
-Plugin 'scrooloose/syntastic'
-Plugin 'godlygeek/csapprox'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'justinmk/vim-syntax-extra'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'vim-utils/vim-man'
-Plugin 'easymotion/vim-easymotion'
-Plugin 'terryma/vim-multiple-cursors'
-Plugin 'terryma/vim-expand-region'
-Plugin 'vim-scripts/peaksea'
-Plugin 'tpope/vim-commentary'
-
-" vim-scripts repos
-Plugin 'ifdef-highlighting'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-
+" Initialize plugin system
+call plug#end()
 
 "------------------------------------------------------------------------------
 " General.
@@ -77,8 +55,8 @@ set relativenumber      " 显示相对行号
 set scrolloff=10        " 垂直移动时保持n行固定
 set sidescroll=5        " 水平移动时保持n列固定
 
-set tabstop=4           " 制表符等于几个空格
-set shiftwidth=4        " 制表符缩进时应用几个空格
+set tabstop=2           " 制表符等于几个空格
+set shiftwidth=2        " 制表符缩进时应用几个空格
 set expandtab           " 使用扩展制表符
 set autoindent          " Auto indent
 set si                  " Smart indent
@@ -104,6 +82,9 @@ set directory-=.        " swap文件不存储在当前文件夹
 
 set list                " show trailing whitespace
 set listchars=tab:▸\ ,trail:▫
+
+" 退格键支持
+set backspace=indent,eol,start
 
 " 关闭gvim菜单
 set guioptions-=m
@@ -138,6 +119,7 @@ if has('gui_running')
 else
     set mouse=              " 关闭鼠标使用
     set background=dark
+    " colorscheme solarized
     colorscheme peaksea
 endif
 
@@ -167,7 +149,9 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
 " 复制粘贴
-vnoremap p "_dP
+" vnoremap d "1d
+" vnoremap P "1p
+
 
 " 保存
 noremap <silent> <leader>w :w<CR>
@@ -232,4 +216,16 @@ map <Leader>h <Plug>(easymotion-linebackward)
 " YCM
 set completeopt-=preview
 let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+let g:max_diagnostics_to_display = 0
+nnoremap <c-]> :YcmCompleter GoTo<CR>
 nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+
+" Ack
+let g:ackprg = 'ag --nogroup --nocolor --column'
+let g:ackhighlight = 1
+cnoreabbrev Ack Ack!
+nnoremap <Leader>a :Ack!<cword><cr>
+
+" a.vim
+nnoremap <Leader>s :IHS<CR>:A<CR>
