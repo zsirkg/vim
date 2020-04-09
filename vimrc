@@ -149,9 +149,7 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
 " 复制粘贴
-" vnoremap d "1d
-" vnoremap P "1p
-
+vnoremap p "_dP
 
 " 保存
 noremap <silent> <leader>w :w<CR>
