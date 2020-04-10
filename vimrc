@@ -13,28 +13,21 @@ call plug#begin('~/.vim/plugged')
 
 " Make sure you use single quotes
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --clangd-completer' }
+Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'scrooloose/nerdtree'
-Plug 'kien/ctrlp.vim'
 Plug 'bling/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'majutsushi/tagbar'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'scrooloose/syntastic'
-Plug 'justinmk/vim-syntax-extra'
-Plug 'godlygeek/csapprox'
+Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'altercation/vim-colors-solarized'
-Plug 'vim-utils/vim-man'
 Plug 'easymotion/vim-easymotion'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'terryma/vim-expand-region'
 Plug 'vim-scripts/peaksea'
-Plug 'tpope/vim-commentary'
-Plug 'mileszs/ack.vim'
+Plug 'preservim/nerdcommenter'
 Plug 'tpope/vim-fugitive'
-Plug 'junegunn/gv.vim'
-Plug 'gregsexton/gitv'
 Plug 'vim-scripts/a.vim'
-Plug 'vim-scripts/ifdef-highlighting'
+Plug 'liuchengxu/vista.vim'
 
 " Initialize plugin system
 call plug#end()
@@ -119,18 +112,9 @@ if has('gui_running')
 else
     set mouse=              " 关闭鼠标使用
     set background=dark
-    " colorscheme solarized
-    colorscheme peaksea
+    colorscheme solarized
+    " colorscheme peaksea
 endif
-
-if has("gui_gtk2")
-    set guifont=consolas\ 16
-elseif has("gui_macvim")
-    set guifont=consolas:h12
-elseif has("gui_win32")
-    set guifont=consolas:h11
-end
-
 
 "------------------------------------------------------------------------------
 " Map
@@ -183,29 +167,33 @@ noremap <F7> :NERDTreeToggle<CR>
 noremap <silent> <leader>d :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-" CtrlP
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
-set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe  " Windows
-
-let g:ctrlp_custom_ignore = {
-            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-            \ 'file': '\v\.(exe|so|dll)$',
-            \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
-            \ }
-
 " vim-airline
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 
-" tagbar
-let g:tagbar_autoclose = 1
-let g:tagbar_autofocus = 1
-nnoremap <silent> <F8> :TagbarToggle<CR>
-nnoremap <silent> <leader>t :TagbarToggle<CR>
-
 " buffere
 noremap <silent> <leader>b :ToggleBufExplorer<CR>
+
+" leaderF
+nnoremap <silent> <leader>t :LeaderfFunction!<CR>
+" don't show the help in normal mode
+let g:Lf_HideHelp = 1
+let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+" popup mode
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PreviewInPopup = 1
+let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+
+let g:Lf_ShortcutF = '<C-P>'
+noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
+noremap gf :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s -w", expand("<cword>"))<CR>
+noremap ga :<C-U><C-R>=printf("Leaderf! rg -e %s -w", expand("<cword>"))<CR>
+noremap go :<C-U>Leaderf! rg --recall<CR>
 
 " easymotion
 map <Leader>l <Plug>(easymotion-lineforward)
@@ -218,12 +206,11 @@ let g:max_diagnostics_to_display = 0
 nnoremap <c-]> :YcmCompleter GoTo<CR>
 nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
-
-" Ack
-let g:ackprg = 'ag --nogroup --nocolor --column'
-let g:ackhighlight = 1
-cnoreabbrev Ack Ack!
-nnoremap <Leader>a :Ack!<cword><cr>
-
 " a.vim
 nnoremap <Leader>s :IHS<CR>:A<CR>
+
+" nerdcommenter
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+" Align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
